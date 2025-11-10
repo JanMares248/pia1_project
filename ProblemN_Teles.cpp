@@ -1,25 +1,27 @@
-
 //using coordinates = double[];  //mnenitelne typy
 //using speeds = double[];
 //using mass = double;
 #include <array>
 #include <vector>
 #include <cmath>;
+#include <iostream>
+#include <fstream>
 class Teleso
 {
 public:
-	double r[2];//coordinates r;
-	double p[2];//momentum p;
+	static const int dim=2;//dimenze, bude potřeba ještě předělat/ dát jinam
+	double r[dim];//coordinates r;
+	double p[dim];//momentum p;
 	double m;//mass m;
 	//double* hamiltonian; //pointer, asi hodit do metody Hamiltonian
-	double nr[2];//coordinates r; //nova vypoctova vrstva
-	double np[2];//momentum p;
+	double nr[dim];//coordinates r; //nova vypoctova vrstva
+	double np[dim];//momentum p;
 	double nm;//mass m;
 
 	//pripravene vysledne veliciny
 	static std::vector<Teleso> Telesa;
-	static double dr[2];
-	static double dp[2];
+	static double dr[dim];
+	static double dp[dim];
 
 	Teleso(double x, double y, double px, double py, double ms)
 	{
@@ -62,9 +64,9 @@ public:
 		}
 		return hamiltonian;
 	};
-	void Dr()
+	static void Dr()
 	{
-		this->dr;
+		dr;
 		for (int d = 0; d < 2;d++)
 		{
 			dr[d] = 0.0;
@@ -77,9 +79,9 @@ public:
 			}
 		}
 	}
-	void Dp()
+	static void Dp()
 	{
-		this->dp;
+		dp;
 		for (int d = 0; d < 2;d++)
 		{
 			dp[d] = 0.0;
@@ -98,13 +100,64 @@ public:
 			}
 		}
 	}
-	static void SolveEuSymp(double timeStep, double end)
-	{
-		int duration = ceil(end / timeStep); //vim bude zaokrohlovat
-		for (int t = 0; t < duration; t++)  //mirne nechapu prevod z shift space do souradnic
-		{
 
+	static void SolverWrite()
+	// zapisuje do solverResult.txt ve formátu r1;r2 \n...pro kazde teleso... dp \n\n
+		{
+			std::ofstream MyFile("solverResult.txt");
+			for (int i = 0; i < Telesa.size(); i++)
+			{
+				for (int j = 0; j < dim; j++)
+				{
+					MyFile << Telesa[i].nr[j];
+					if (j==dim-1)
+						{
+							MyFile << "\n";
+						}
+						else
+						{
+							MyFile << ";";
+						}
+					}
+				// pro pripad, ze bychom chteli vypisovat i p
+				// for (int j = 0; j < dim; j++)
+				// {
+				// 	MyFile << Telesa[i].np[j];
+				// 	if (j==dim-1)
+				// 		{
+				// 			MyFile << "\n\n";
+				// 		}
+				// 		else
+				// 		{
+				// 			MyFile << ";";
+				// 		}
+				// 	}
+			}
+			MyFile << dp;
+			MyFile << "\n\n";
 		}
-	};
+	static void SolveEuSymp(double timeStep, double end, int saveInterval)
+	{
+
+		int nSteps = ceil(end / timeStep); //vim bude zaokrohlovat
+		std::cout <<"Create time"<< std::endl;
+		for (int t = 0; t < nSteps; t++)  //mirne nechapu prevod z shift space do souradnic
+			{
+				Dp();
+				Dr();  // update hodnot v každý čas
+				for (int i = 0; i < Telesa.size(); i++) // pro každé těleso
+					{
+						for (int j = 0; j < dim; j++) // pro každou souřadnici
+						{
+							Telesa[i].np[j] = Telesa[i].p[j] + timeStep * dp[j]; // spočte nové p a nové r
+							Telesa[i].nr[j] = Telesa[i].r[j] + timeStep * dr[j];
+							if (t%saveInterval==0)
+							{
+								SolverWrite(); // zapíše do souboru
+							}
+						}
+					}
+			}
 	//pokud budete chtit dodelat solvery, tak mohme tady
+};
 };
