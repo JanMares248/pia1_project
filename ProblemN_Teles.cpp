@@ -120,18 +120,18 @@ public:
 						}
 					}
 				// pro pripad, ze bychom chteli vypisovat i p
-				// for (int j = 0; j < dim; j++)
-				// {
-				// 	MyFile << Telesa[i].np[j];
-				// 	if (j==dim-1)
-				// 		{
-				// 			MyFile << "\n\n";
-				// 		}
-				// 		else
-				// 		{
-				// 			MyFile << ";";
-				// 		}
-				// 	}
+				for (int j = 0; j < dim; j++)
+				{
+					MyFile << Telesa[i].np[j];
+					if (j==dim-1)
+						{
+							MyFile << "\n\n";
+						}
+						else
+						{
+							MyFile << ";";
+						}
+					}
 			}
 			MyFile << dp;
 			MyFile << "\n\n";
@@ -160,4 +160,10 @@ public:
 			}
 	//pokud budete chtit dodelat solvery, tak mohme tady
 };
-};
+// 	static double PolReverseTrans(double r[dim])
+// 	{
+// 		double x[1] = r[0]*cos(r[1]);
+// 		double x[2] = r[0]*sin(r[1]);
+// 		return (x);
+// 	}
+// };
