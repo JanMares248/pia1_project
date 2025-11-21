@@ -10,7 +10,8 @@ class Teleso
 {
 public:
 	static const int dim=2;//dimenze, bude potřeba ještě předělat/ dát jinam
-	double r[dim];//coordinates r;
+	double r[dim];//coordinates polar;
+	double x[dim];//coordinates carthesian;
 	double p[dim];//momentum p;
 	double m;//mass m;
 	//double* hamiltonian; //pointer, asi hodit do metody Hamiltonian
@@ -23,13 +24,15 @@ public:
 	static double dr[dim];
 	static double dp[dim];
 
-	Teleso(double x, double y, double px, double py, double ms)
+	Teleso(double x_, double y_, double px, double py, double ms)
 	{
-		r[0] = x;
-		r[1] = y;
+		x[0] = x_;
+		x[1] = y_;
+		this->PolTransReversible(x,false);
 		p[0] = px;
 		p[1] = py;
 		m = ms;
+		//inic Telesa?
 	}
 
 	// metody
@@ -38,10 +41,10 @@ public:
 		double v = sqrt(pow(2.0, Telesa[i].r[0]) + pow(2.0, Telesa[j].r[0]) + pow(2.0, Telesa[i].r[1]) + pow(2.0, Telesa[j].r[1]));
 		return v;
 	}
-	static void Add(double x, double y, double px, double py, double ms)
+	static void Add(Teleso t)//double x, double y, double px, double py, double ms)
 	{
-		Teleso newTel(x, y, px, py, ms);
-		Telesa.push_back(newTel);
+		//Teleso newTel(x, y, px, py, ms);
+		Telesa.push_back(t);
 	}
 	static double Hamiltonian()//vypocet hamiltonianu
 	{
@@ -160,10 +163,17 @@ public:
 			}
 	//pokud budete chtit dodelat solvery, tak mohme tady
 };
-// 	static double PolReverseTrans(double r[dim])
-// 	{
-// 		double x[1] = r[0]*cos(r[1]);
-// 		double x[2] = r[0]*sin(r[1]);
-// 		return (x);
-// 	}
-// };
+	void PolTransReversible(double r[dim], bool reverse)
+	{
+		if (reverse==true)
+		{
+			x[0] = r[0]*cos(r[1]);
+			x[1] = r[0]*sin(r[1]);
+		}
+		else
+		{
+			r[0] = sqrt(pow(x[0],2)+pow(x[1],2));
+			r[1] = atan2(x[1],x[0]);
+		}
+	}
+};
