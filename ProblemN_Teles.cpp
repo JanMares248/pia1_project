@@ -20,7 +20,7 @@ public:
 	double nm;//mass m;
 
 	//pripravene vysledne veliciny
-	static std::vector<Teleso> Telesa;
+	static public std::vector<Teleso> Telesa; //pri nejhorsim vedle public strukturu, 
 	static double dr[dim];
 	static double dp[dim];
 
@@ -41,9 +41,9 @@ public:
 		double v = sqrt(pow(2.0, Telesa[i].r[0]) + pow(2.0, Telesa[j].r[0]) + pow(2.0, Telesa[i].r[1]) + pow(2.0, Telesa[j].r[1]));
 		return v;
 	}
-	static void Add(Teleso t)//double x, double y, double px, double py, double ms)
+	static void Add(double x, double y, double px, double py, double ms)//Teleso t
 	{
-		//Teleso newTel(x, y, px, py, ms);
+		Teleso newTel(x, y, px, py, ms);
 		Telesa.push_back(t);
 	}
 	static double Hamiltonian()//vypocet hamiltonianu
@@ -141,7 +141,6 @@ public:
 		}
 	static void SolveEuSymp(double timeStep, double end, int saveInterval)
 	{
-
 		int nSteps = ceil(end / timeStep); //vim bude zaokrohlovat
 		std::cout <<"Create time"<< std::endl;
 		for (int t = 0; t < nSteps; t++)  //mirne nechapu prevod z shift space do souradnic
@@ -157,11 +156,15 @@ public:
 							if (t%saveInterval==0)
 							{
 								SolverWrite(); // zapíše do souboru
-							}
+							} 
 						}
 					}
 			}
-	//pokud budete chtit dodelat solvery, tak mohme tady
+		for each(Teleso t in Teleso.Telesa) //-> nahrat nove do stare vrstvy, asi chybi.
+		{
+			t.p = t.p;
+		}
+	//pokud budete chtit dodelat solvery, tak mohme tady -> mluvil o normalnim eulerovy
 };
 	void PolTransReversible(double r[dim], bool reverse)
 	{
