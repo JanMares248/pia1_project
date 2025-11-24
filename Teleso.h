@@ -3,7 +3,7 @@
 //using mass = double;
 #include <array>
 #include <vector>
-#include <cmath>;
+#include <cmath>
 #include <iostream>
 #include <fstream>
 class Teleso
@@ -70,11 +70,11 @@ public:
 	static void Dr()
 	{
 		dr;
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			dr[d] = 0.0;
 		}
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			for (int i = 0;i < Telesa.size();i++)
 			{
@@ -85,11 +85,11 @@ public:
 	static void Dp()
 	{
 		dp;
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			dp[d] = 0.0;
 		}
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			for (int i = 0;i < Telesa.size();i++)
 			{
