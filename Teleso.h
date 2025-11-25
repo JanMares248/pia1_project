@@ -3,7 +3,7 @@
 //using mass = double;
 #include <array>
 #include <vector>
-#include <cmath>;
+#include <cmath>
 #include <iostream>
 #include <fstream>
 class Teleso
@@ -20,7 +20,7 @@ public:
 	double nm;//mass m;
 
 	//pripravene vysledne veliciny
-	static public std::vector<Teleso> Telesa; //pri nejhorsim vedle public strukturu, 
+	static std::vector<Teleso> Telesa; //pri nejhorsim vedle public strukturu, 
 	static double dr[dim];
 	static double dp[dim];
 
@@ -43,7 +43,7 @@ public:
 	}
 	static void Add(double x, double y, double px, double py, double ms)//Teleso t
 	{
-		Teleso newTel(x, y, px, py, ms);
+		Teleso t(x, y, px, py, ms);
 		Telesa.push_back(t);
 	}
 	static double Hamiltonian()//vypocet hamiltonianu
@@ -70,11 +70,11 @@ public:
 	static void Dr()
 	{
 		dr;
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			dr[d] = 0.0;
 		}
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			for (int i = 0;i < Telesa.size();i++)
 			{
@@ -85,11 +85,11 @@ public:
 	static void Dp()
 	{
 		dp;
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			dp[d] = 0.0;
 		}
-		for (int d = 0; d < 2;d++)
+		for (int d = 0; d < dim;d++)
 		{
 			for (int i = 0;i < Telesa.size();i++)
 			{
@@ -160,10 +160,15 @@ public:
 						}
 					}
 			}
-		for each(Teleso t in Teleso.Telesa) //-> nahrat nove do stare vrstvy, asi chybi.
+		for (int i = 0; i < Telesa.size(); i++)//for (Teleso t : Telesa) //-> nahrat nove do stare vrstvy, asi chybi.
 		{
-			t.p = t.p;
+			for (int j = 0; j < dim; j++) // pro každou souřadnici
+						{
+			Telesa[i].p[j] = Telesa[i].np[j];
+			}
+			//t.p = t.np;
 		}
+
 	//pokud budete chtit dodelat solvery, tak mohme tady -> mluvil o normalnim eulerovy
 };
 	void PolTransReversible(double r[dim], bool reverse)
