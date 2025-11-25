@@ -1,4 +1,8 @@
+#include "Form2.h"
+#include "Form3.h"
 #include "Form4.h"
+#include "Form5.h"
+#include "NBody.h"
 #include <math.h>
 
 int Form4::getRadius(int sizeSetting)
@@ -20,12 +24,12 @@ void Form4::loadSizes()
 
     while (savedSizes->Count < pointCount)
     {
-        // default size 1
+        //deffaultni naplneni
         savedSizes->Add(1);
     }
     while (savedSizes->Count > pointCount)
     {
-        // Remove surplus
+        //odstrani nadbytecna telesa
         savedSizes->RemoveAt(savedSizes->Count - 1);
     }
 }
@@ -67,6 +71,16 @@ Form4::Form4(System::Drawing::Size s)
     btnPrev->Click += gcnew EventHandler(this, &Form4::btnPrev_Click);
     this->Controls->Add(btnPrev);
 
+    btnNext = gcnew Button();
+    btnNext->Text = "Start Simulation";
+    btnNext->Size = Drawing::Size(150, 30);
+    btnNext->Location = Drawing::Point(this->ClientSize.Width - 180,
+        this->ClientSize.Height - 50);
+    btnNext->BackColor = Drawing::Color::White;
+    btnNext->ForeColor = Drawing::Color::Black;
+    btnNext->Click += gcnew EventHandler(this, &Form4::btnNext_Click);
+    this->Controls->Add(btnNext);
+    
 
     this->Paint += gcnew PaintEventHandler(this, &Form4::OnPaint);
     this->MouseDown += gcnew MouseEventHandler(this, &Form4::OnMouseDown);
@@ -81,7 +95,7 @@ void Form4::OnPaint(Object^ sender, PaintEventArgs^ e)
         Point p = Form2::savedPoints[i];
         int currentRadius = getRadius(savedSizes[i]);
 
-        //zelena, pokud zvoleny
+        //cervena, pokud zvoleny
         Brush^ brush = (i == selectedIndex) ? Brushes::Red : Brushes::WhiteSmoke;
 
         g->FillEllipse(brush,
@@ -163,6 +177,51 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
     }
 }
 
+//void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
+//{
+//    Teleso::Telesa.clear();
+//
+//    int count = Form2::savedPoints->Count;
+//    if (count == 0) return;
+//
+//    for (int i = 0; i < count; i++)
+//    {
+//        double x = (double)Form2::savedPoints[i].X;
+//        double y = (double)Form2::savedPoints[i].Y;
+//
+//
+//        Form3::ArrowState state = Form3::savedArrowStates[i];
+//
+//        // delka sipky -> pocatecni vektor rychlost
+//        double speedMagnitude = (double)state.length / 10.0; // deleno 10
+//
+//        // uhel v radianech
+//        double angle = state.angle;
+//
+//        //V_x = |V| * cos(angle), V_y = |V| * sin(angle)
+//        double vx = speedMagnitude * System::Math::Cos(angle);
+//        double vy = speedMagnitude * System::Math::Sin(angle);
+//
+//        // hmostnost m z savedSizes
+//        double mass = (double)Form4::savedSizes[i];
+//
+//        //p = m * v
+//        double px = mass * vx;
+//        double py = mass * vy;
+//
+//        Teleso::Telesa.emplace_back(x, y, px, py, mass);
+//    }
+//}
+
+void Form4::btnNext_Click(Object^ sender, EventArgs^ e)
+{
+    //NBody::InitializeSimulationData(this->ClientSize);
+
+    Form5^ f5 = gcnew Form5(this->ClientSize);
+    f5->Location = this->Location;
+    f5->Show();
+    this->Close();
+}
 
 void Form4::btnPrev_Click(Object^ sender, EventArgs^ e)
 {

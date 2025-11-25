@@ -29,5 +29,7 @@ private:
     void SizeEditor_TextChanged(Object^ sender, EventArgs^ e);
 
     Button^ btnPrev;
+    Button^ btnNext;
     void btnPrev_Click(Object^ sender, EventArgs^ e);
+    void btnNext_Click(Object^ sender, EventArgs^ e);
 };
