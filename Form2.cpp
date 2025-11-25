@@ -7,19 +7,21 @@
 
 Form2::Form2(int c, System::Drawing::Size s)
 {
-    this->Text = "Drag Circles";
+    this->Text = "Selelct initial position";
     this->ClientSize = s;
     this->DoubleBuffered = true;
+    this->BackColor = System::Drawing::Color::Black;
 
     count = c;
 
     dragIndex = -1;
-    points = gcnew array<Point>(count);
 
     btnPrev = gcnew Button();
     btnPrev->Text = "Previous";
     btnPrev->Size = Drawing::Size(100, 30);
     btnPrev->Location = Drawing::Point(20, this->ClientSize.Height - 50);
+    btnPrev->BackColor = Drawing::Color::White;
+    btnPrev->ForeColor = Drawing::Color::Black;
     btnPrev->Click += gcnew EventHandler(this, &Form2::btnPrev_Click);
     this->Controls->Add(btnPrev);
 
@@ -28,6 +30,8 @@ Form2::Form2(int c, System::Drawing::Size s)
     btnNext->Size = Drawing::Size(100, 30);
     btnNext->Location = Drawing::Point(this->ClientSize.Width - 130,
         this->ClientSize.Height - 50);
+    btnNext->BackColor = Drawing::Color::White;
+    btnNext->ForeColor = Drawing::Color::Black;
     btnNext->Click += gcnew EventHandler(this, &Form2::btnNext_Click);
     this->Controls->Add(btnNext);
 
@@ -60,10 +64,6 @@ void Form2::loadPoints()
     {
         savedPoints->RemoveAt(savedPoints->Count - 1);
     }
-    for (int i = 0; i < count; i++)
-    {
-        points[i] = savedPoints[i];
-    }
 }
 
 void Form2::OnPaint(Object^ sender, PaintEventArgs^ e)
@@ -75,8 +75,8 @@ void Form2::OnPaint(Object^ sender, PaintEventArgs^ e)
         int currentRadius = GetDynamicRadius(currentSizeSetting);
 
         //vykresli kruh, sirka a vyska jsou stejne
-        e->Graphics->FillEllipse(Brushes::Blue,
-            points[i].X - currentRadius, points[i].Y - currentRadius,
+        e->Graphics->FillEllipse(Brushes::WhiteSmoke,
+            savedPoints[i].X - currentRadius, savedPoints[i].Y - currentRadius,
             currentRadius * 2, currentRadius * 2);
     }
 }
@@ -91,7 +91,7 @@ void Form2::OnMouseDown(Object^ sender, MouseEventArgs^ e)
         int currentRadius = GetDynamicRadius(currentSizeSetting);
 
         //vztvoreni virtualniho obdelniku obsahujici kruh pro indikaci kliknuti na kruh
-        Rectangle r(points[i].X - currentRadius, points[i].Y - currentRadius,
+        Rectangle r(savedPoints[i].X - currentRadius, savedPoints[i].Y - currentRadius,
             currentRadius * 2, currentRadius * 2);
 
         //pokud je kurzor v obdelniku
@@ -101,7 +101,7 @@ void Form2::OnMouseDown(Object^ sender, MouseEventArgs^ e)
             dragIndex = i;
 
             //nastaveni Pointu dragOffset
-            dragOffset = Point(e->X - points[i].X, e->Y - points[i].Y);
+            dragOffset = Point(e->X - savedPoints[i].X, e->Y - savedPoints[i].Y);
             break;
         }
     }
@@ -113,8 +113,7 @@ void Form2::OnMouseMove(Object^ sender, MouseEventArgs^ e)
     {  
         //dragoffset je Point, rozdil stareho a noveho bodu po souradnicich
 
-        points[dragIndex] = Point(e->X - dragOffset.X, e->Y - dragOffset.Y);
-        savedPoints[dragIndex] = points[dragIndex];
+        savedPoints[dragIndex] = Point(e->X - dragOffset.X, e->Y - dragOffset.Y);
         this->Invalidate();
     }
 }

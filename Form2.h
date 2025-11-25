@@ -11,7 +11,7 @@ using namespace System::Collections::Generic;
 inline int GetDynamicRadius(int sizeSetting)
 {
 
-    const int baseRadius = 15;
+    const int baseRadius = 10;
     const double multiplier = 0.5;
 
     int size = Math::Max(1, sizeSetting);
@@ -32,9 +32,7 @@ public:
     static List<Point>^ savedPoints = gcnew List<Point>();
 
 private: 
-    int count;
-    //lokalni pole bodu
-    array<Point>^ points;
+    int count;    
     int dragIndex;
     Point dragOffset;
     Button^ btnPrev;

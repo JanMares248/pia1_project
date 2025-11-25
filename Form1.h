@@ -13,6 +13,7 @@ public:
     {
         this->Text = "Select Count";
         this->ClientSize = Drawing::Size(800, 400);
+        this->BackColor = System::Drawing::Color::Black;
 
         comboBox1 = gcnew ComboBox();
         comboBox1->Size = Drawing::Size(100, 20);
@@ -24,20 +25,22 @@ public:
         comboBox1->SelectedIndex = 0;
         this->Controls->Add(comboBox1);
 
-        buttonNext = gcnew Button();
-        buttonNext->Text = "Next";
-        buttonNext->Size = Drawing::Size(100, 30);
-        buttonNext->Location = Drawing::Point(this->ClientSize.Width - 130,
+        btnNext = gcnew Button();
+        btnNext->Text = "Next";
+        btnNext->Size = Drawing::Size(100, 30);
+        btnNext->Location = Drawing::Point(this->ClientSize.Width - 130,
             this->ClientSize.Height - 50);
-        buttonNext->Click += gcnew EventHandler(this, &Form1::buttonNext_Click);
-        this->Controls->Add(buttonNext);
+        btnNext->BackColor = Drawing::Color::White;
+        btnNext->ForeColor = Drawing::Color::Black;
+        btnNext->Click += gcnew EventHandler(this, &Form1::btnNext_Click);
+        this->Controls->Add(btnNext);
     }
 
 private:
     ComboBox^ comboBox1;
-    Button^ buttonNext;
+    Button^ btnNext;
 
-    void buttonNext_Click(Object^ sender, EventArgs^ e)
+    void btnNext_Click(Object^ sender, EventArgs^ e)
     {
         int count = Convert::ToInt32(comboBox1->SelectedItem);
         Form2^ f2 = gcnew Form2(count, this->ClientSize);

@@ -8,8 +8,7 @@ using namespace System::Windows::Forms;
 using namespace System::Drawing;
 using namespace System::Collections::Generic;
 
-//trida pro sipku na konci vektoru
-public ref class Arrow
+public value struct Arrow
 {
 public:
     Point basePoint;
@@ -17,17 +16,17 @@ public:
     double angle;
     int length;
 
-    
     Arrow(Point b, double a, int len);
 
 };
 
-//pro ukladani noveho natoceni a nove delky sipky pri premistovani mysi
-public ref struct ArrowState
+public value struct ArrowState
 {
     double angle;
     int length;
 };
+
+
 
 public ref class Form3 : public Form
 {
@@ -35,10 +34,10 @@ public:
 
     Form3(System::Drawing::Size s);
 
-    static List<ArrowState^>^ savedArrowStates = gcnew List<ArrowState^>();
+    static List<ArrowState>^ savedArrowStates = gcnew List<ArrowState>();
 
 private:
-    List<Arrow^>^ arrows;
+    List<Arrow>^ arrows;
     int dragIndex;
     Button^ btnPrev;
     Button^ btnNext;

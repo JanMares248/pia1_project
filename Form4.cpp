@@ -1,30 +1,10 @@
 #include "Form4.h"
 #include <math.h>
 
-// Helper to calculate the actual radius based on the size setting (1=15, 2=30, etc.)
 int Form4::getRadius(int sizeSetting)
 {
     int size = Math::Max(1, sizeSetting);
-
-    double radiusScale;
-
-    const double C = 10.0;
-
-    if (size == 1)
-    {
-        radiusScale = 1.0;
-    }
-    else
-    {
-
-        //radiusScale = 1.0 + Math::Log(size) / Math::Log(C) * (C / 2.0);
-
-        radiusScale = 1.0 + Math::Log(size); // For size 1, Log(1)=0, scale=1.
-
-        //radiusScale = 1.0 + 0.5 * Math::Log(size); // Adjust 0.5 for steeper/shallower curve
-    }
-
-    
+  
     double logFactor = Math::Log(size);
 
     double multiplier = 0.5;
@@ -55,8 +35,9 @@ Form4::Form4(System::Drawing::Size s)
     this->Text = "Adjust Ball Sizes";
     this->ClientSize = s;
     this->DoubleBuffered = true;
+    this->BackColor = System::Drawing::Color::Black;
 
-    baseRadius = 15;
+    baseRadius = 10;
     selectedIndex = -1;
     sizeEditors = gcnew List<TextBox^>();
 
@@ -81,6 +62,8 @@ Form4::Form4(System::Drawing::Size s)
     btnPrev->Text = "Previous";
     btnPrev->Size = Drawing::Size(100, 30);
     btnPrev->Location = Drawing::Point(20, this->ClientSize.Height - 50);
+    btnPrev->BackColor = Drawing::Color::White;
+    btnPrev->ForeColor = Drawing::Color::Black;
     btnPrev->Click += gcnew EventHandler(this, &Form4::btnPrev_Click);
     this->Controls->Add(btnPrev);
 
@@ -97,8 +80,9 @@ void Form4::OnPaint(Object^ sender, PaintEventArgs^ e)
     {
         Point p = Form2::savedPoints[i];
         int currentRadius = getRadius(savedSizes[i]);
-        //green if selelcted
-        Brush^ brush = (i == selectedIndex) ? Brushes::Green : Brushes::Blue;
+
+        //zelena, pokud zvoleny
+        Brush^ brush = (i == selectedIndex) ? Brushes::Red : Brushes::WhiteSmoke;
 
         g->FillEllipse(brush,
             p.X - currentRadius, p.Y - currentRadius,
@@ -117,6 +101,8 @@ void Form4::OnMouseDown(Object^ sender, MouseEventArgs^ e)
         Point p = Form2::savedPoints[i];
         int currentRadius = getRadius(savedSizes[i]);
 
+        //vytvoreni dynamickeho ctverce kolem kruhu, podle jeho velikost
+        //pokud uzivatel klikne do ctverce, zvoli se dany kruh
         double dx = e->X - p.X;
         double dy = e->Y - p.Y;
         double distanceSquared = dx * dx + dy * dy;
@@ -163,13 +149,15 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
     int index = safe_cast<int>(tb->Tag);
 
     int newSize;
+
     if (Int32::TryParse(tb->Text, newSize))
     {
 
-        if (newSize < 1) newSize = 1;
+        if (newSize < 1) {
+            newSize = 1;
+        }
 
         savedSizes[index] = newSize;
-
 
         this->Invalidate();
     }

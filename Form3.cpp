@@ -20,15 +20,18 @@ Form3::Form3(System::Drawing::Size s)
     this->Text = "Initial Velocity Vectors";
     this->ClientSize = s;
     this->DoubleBuffered = true;
+    this->BackColor = System::Drawing::Color::Black;
 
     arrowLen = 80;
     dragIndex = -1;
-    arrows = gcnew List<Arrow^>();
+    arrows = gcnew List<Arrow>();
 
     btnPrev = gcnew Button();
     btnPrev->Text = "Previous";
     btnPrev->Size = Drawing::Size(100, 30);
     btnPrev->Location = Drawing::Point(20, this->ClientSize.Height - 50);
+    btnPrev->BackColor = Drawing::Color::White;
+    btnPrev->ForeColor = Drawing::Color::Black;
     btnPrev->Click += gcnew EventHandler(this, &Form3::btnPrev_Click);
     this->Controls->Add(btnPrev);
 
@@ -37,6 +40,8 @@ Form3::Form3(System::Drawing::Size s)
     btnNext->Size = Drawing::Size(100, 30);
     btnNext->Location = Drawing::Point(this->ClientSize.Width - 130,
         this->ClientSize.Height - 50);
+    btnNext->BackColor = Drawing::Color::White;
+    btnNext->ForeColor = Drawing::Color::Black;
     btnNext->Click += gcnew EventHandler(this, &Form3::btnNext_Click);
     this->Controls->Add(btnNext);
 
@@ -52,21 +57,20 @@ Form3::Form3(System::Drawing::Size s)
 
 void Form3::updateSavedArrowStates()
 {
-    //lokalni pointCount z globalniho savedPoints
-    int pointCount = Form2::savedPoints->Count;
-    while (savedArrowStates->Count < pointCount)
+
+    while (savedArrowStates->Count < Form2::savedPoints->Count)
     {
 
         Random^ rnd = gcnew Random();
         double initialAngle = rnd->NextDouble() * 2 * Math::PI;
         
 
-        ArrowState^ newState = gcnew ArrowState();
-        newState->angle = initialAngle;
-        newState->length = arrowLen;
+        ArrowState newState;
+        newState.angle = initialAngle;
+        newState.length = arrowLen;
         savedArrowStates->Add(newState);
     }
-    while (savedArrowStates->Count > pointCount)
+    while (savedArrowStates->Count > Form2::savedPoints->Count)
     {
         savedArrowStates->RemoveAt(savedArrowStates->Count - 1);
     }
@@ -78,9 +82,9 @@ void Form3::generateArrows()
     for (int i = 0; i < Form2::savedPoints->Count; i++)
     {
         Point p = Form2::savedPoints[i];
-        ArrowState^ state = savedArrowStates[i];
+        ArrowState state = savedArrowStates[i];
 
-        arrows->Add(gcnew Arrow(p, state->angle, state->length));
+        arrows->Add(Arrow(p, state.angle, state.length));
     }
 }
 
@@ -96,27 +100,24 @@ void Form3::OnPaint(Object^ sender, PaintEventArgs^ e)
         int currentSizeSetting = Form4::savedSizes[i];
         int currentRadius = GetDynamicRadius(currentSizeSetting);
 
-        g->FillEllipse(Brushes::Blue,
+        g->FillEllipse(Brushes::WhiteSmoke,
             p.X - currentRadius, p.Y - currentRadius,
             currentRadius * 2, currentRadius * 2);
     }
 
-    for each (Point p in Form2::savedPoints)
-        g->FillEllipse(Brushes::Blue, p.X - 15, p.Y - 15, 30, 30);
-
-    for each (Arrow ^ a in arrows)
+    for each (Arrow a in arrows)
     {
         //pro nakresleni cervene cary sipky
-        Pen^ pen = gcnew Pen(Color::Red, 2);
-        g->DrawLine(pen, a->basePoint, a->tipPoint);
+        Pen^ pen = gcnew Pen(Color::Red, 1.2);
+        g->DrawLine(pen, a.basePoint, a.tipPoint);
 
-        drawArrowHead(g, a->tipPoint, a->angle);
+        drawArrowHead(g, a.tipPoint, a.angle);
     }
 }
 
 void Form3::drawArrowHead(Graphics^ g, Point tip, double angle)
 {
-    int size = 20;
+    int size = 15;
     array<PointF>^ pts = {
         PointF((float)tip.X, (float)tip.Y),
         PointF((float)(tip.X - size * Math::Cos(angle - Math::PI / 6)),
@@ -124,16 +125,16 @@ void Form3::drawArrowHead(Graphics^ g, Point tip, double angle)
         PointF((float)(tip.X - size * Math::Cos(angle + Math::PI / 6)),
                 (float)(tip.Y - size * Math::Sin(angle + Math::PI / 6)))
     };
-    g->FillPolygon(Brushes::Green, pts);
+    g->FillPolygon(Brushes::Blue, pts);
 }
 
 void Form3::OnMouseDown(Object^ sender, MouseEventArgs^ e)
 {
     for (int i = 0; i < arrows->Count; i++)
     {
-        Arrow^ a = arrows[i];
-        //vzgenerovani obdelniku okolo konce sipky
-        Rectangle r(a->tipPoint.X - 10, a->tipPoint.Y - 10, 12, 12);
+        Arrow a = arrows[i];
+        //vygenerovani obdelniku okolo konce sipky
+        Rectangle r(a.tipPoint.X - 20, a.tipPoint.Y - 20, 40, 40);
         if (r.Contains(e->Location))
         {
             dragIndex = i;
@@ -146,14 +147,18 @@ void Form3::OnMouseMove(Object^ sender, MouseEventArgs^ e)
 {
     if (dragIndex >= 0)
     {
-        //zvoleni spiky, kterou budeme hybat
-        Arrow^ a = arrows[dragIndex];
-        double dx = e->X - a->basePoint.X;
-        double dy = e->Y - a->basePoint.Y;
-        a->angle = Math::Atan2(dy, dx);
-        a->length = (int)Math::Sqrt(dx * dx + dy * dy);
-        a->tipPoint = Point((int)(a->basePoint.X + a->length * Math::Cos(a->angle)),
-            (int)(a->basePoint.Y + a->length * Math::Sin(a->angle)));
+        //zvoleni sipky, kterou budeme hybat
+        Arrow a = arrows[dragIndex]; // Zde se naète kopie
+
+        double dx = e->X - a.basePoint.X;
+        double dy = e->Y - a.basePoint.Y;
+        a.angle = Math::Atan2(dy, dx);
+        a.length = (int)Math::Sqrt(dx * dx + dy * dy);
+        a.tipPoint = Point((int)(a.basePoint.X + a.length * Math::Cos(a.angle)),
+            (int)(a.basePoint.Y + a.length * Math::Sin(a.angle)));
+
+        //ulozeni modifikovane kopie zpet do seznamu
+        arrows[dragIndex] = a;
 
         saveCurrentArrowState(dragIndex);
 
@@ -187,10 +192,13 @@ void Form3::saveCurrentArrowState(int index)
 {
     if (index >= 0 && index < arrows->Count)
     {
-        Arrow^ a = arrows[index];
-        ArrowState^ state = savedArrowStates[index];
-        state->angle = a->angle;
-        state->length = a->length;
+        Arrow a = arrows[index];
+
+        ArrowState state = savedArrowStates[index]; //nacteni kopie stavu
+        state.angle = a.angle;
+        state.length = a.length;
+
+        savedArrowStates[index] = state; //ulozeni kopie stavu
     }
 }
 
