@@ -4,18 +4,19 @@
 #include <iostream>
 #include <fstream>
 #include "Teleso.h"
-class Case;
+class Case {
+	public:
     const int dim = 2;
     std::vector<Teleso> Telesa;
 
     // static void Add(double x, double y, double px, double py, double ms)//Teleso t
-	static void Add(Teleso t)
+	void Add(Teleso t)
         {
             // Teleso t(x, y, px, py, ms);
             Telesa.push_back(t);
         }
 
-	static void SolverWrite()
+	void SolverWrite()
 	// zapisuje do solverResult.txt ve formátu r1;r2 \n...pro kazde teleso... dp \n\n
 		{
 			std::ofstream MyFile("solverResult.txt");
@@ -50,7 +51,7 @@ class Case;
 			}
 			MyFile << "\n\n";
 		}
-	static void SolveEuSymp(double timeStep, double end, int saveInterval)
+	void SolveEuSymp(double timeStep, double end, int saveInterval)
 	{
 		int nSteps = ceil(end / timeStep); //vim bude zaokrohlovat
 		std::cout <<"Create time"<< std::endl;
@@ -83,4 +84,5 @@ class Case;
 		}
 
 	//pokud budete chtit dodelat solvery, tak mohme tady -> mluvil o normalnim eulerovy
+};
 };

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#pragma once
 class Teleso
 {
 public:
@@ -20,9 +21,9 @@ public:
 	double nm;//mass m;
 
 	//pripravene vysledne veliciny
-	static std::vector<Teleso> Telesa; //pri nejhorsim vedle public strukturu, 
-	static double dr[dim];
-	static double dp[dim];
+	 std::vector<Teleso> Telesa; //pri nejhorsim vedle public strukturu, 
+	 double dr[dim];
+	 double dp[dim];
 
 	Teleso(double x_, double y_, double px, double py, double ms)
 	{
@@ -36,17 +37,17 @@ public:
 	}
 
 	// metody
-	static double Distance(int i, int j)
+	 double Distance(int i, int j)
 	{
 		double v = sqrt(pow(2.0, Telesa[i].r[0]) + pow(2.0, Telesa[j].r[0]) + pow(2.0, Telesa[i].r[1]) + pow(2.0, Telesa[j].r[1]));
 		return v;
 	}
-	static void Add(double x, double y, double px, double py, double ms)//Teleso t
+	 void Add(double x, double y, double px, double py, double ms)//Teleso t
 	{
 		Teleso t(x, y, px, py, ms);
 		Telesa.push_back(t);
 	}
-	static double Hamiltonian()//vypocet hamiltonianu
+	 double Hamiltonian()//vypocet hamiltonianu
 	{
 		double hamiltonian;
 		double grav = 0;
@@ -67,7 +68,7 @@ public:
 		}
 		return hamiltonian;
 	};
-	static void Dr()
+	 void Dr()
 	{
 		dr;
 		for (int d = 0; d < dim;d++)
@@ -82,7 +83,7 @@ public:
 			}
 		}
 	}
-	static void Dp()
+	 void Dp()
 	{
 		dp;
 		for (int d = 0; d < dim;d++)
@@ -104,7 +105,7 @@ public:
 		}
 	}
 
-	static void SolverWrite()
+	 void SolverWrite()
 	// zapisuje do solverResult.txt ve formátu r1;r2 \n...pro kazde teleso... dp \n\n
 		{
 			std::ofstream MyFile("solverResult.txt");
@@ -139,7 +140,7 @@ public:
 			MyFile << dp;
 			MyFile << "\n\n";
 		}
-	static void SolveEuSymp(double timeStep, double end, int saveInterval)
+	 void SolveEuSymp(double timeStep, double end, int saveInterval)
 	{
 		int nSteps = ceil(end / timeStep); //vim bude zaokrohlovat
 		std::cout <<"Create time"<< std::endl;
