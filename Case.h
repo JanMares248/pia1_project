@@ -16,47 +16,49 @@ class Case {
             Telesa.push_back(t);
         }
 
-	void SolverWrite()
+	void SolverWrite(std::ofstream file)
 	// zapisuje do solverResult.txt ve formátu r1;r2 \n...pro kazde teleso... dp \n\n
 		{
-			std::ofstream MyFile("solverResult.txt");
+			
 			for (int i = 0; i < Telesa.size(); i++)
 			{
 				for (int j = 0; j < dim; j++)
 				{
-					MyFile << Telesa[i].nr[j];
+					file << Telesa[i].nr[j];
 					if (j==dim-1)
 						{
-							MyFile << "\n";
+							file << "\n";
 						}
 						else
 						{
-							MyFile << ";";
+							file << ";";
 						}
 					}
 				// pro pripad, ze bychom chteli vypisovat i p
-				for (int j = 0; j < dim; j++)
-				{
-					MyFile << Telesa[i].np[j];
-					if (j==dim-1)
-						{
-							MyFile << "\n\n";
-						}
-						else
-						{
-							MyFile << ";";
-						}
-					}
-			MyFile << Telesa[i].dp;
+			// 	for (int j = 0; j < dim; j++)
+			// 	{
+			// 		MyFile << Telesa[i].np[j];
+			// 		if (j==dim-1)
+			// 			{
+			// 				file << "\n\n";
+			// 			}
+			// 			else
+			// 			{
+			// 				file << ";";
+			// 			}
+			// 		}
+			// file << Telesa[i].dp;
 			}
-			MyFile << "\n\n";
+			file << "\n\n";
 		}
 	void SolveEuSymp(double timeStep, double end, int saveInterval)
 	{
+		std::ofstream file("solverResult.txt");
 		int nSteps = ceil(end / timeStep); //vim bude zaokrohlovat
 		std::cout <<"Create time"<< std::endl;
 		for (int t = 0; t < nSteps; t++)  //mirne nechapu prevod z shift space do souradnic
 			{
+				std::cout <<t<< std::endl;
 				// Telesa[i].Dp();
 				// Telesa[i].Dr();  // update hodnot v každý čas
 				for (int i = 0; i < Telesa.size(); i++) // pro každé těleso
@@ -69,10 +71,42 @@ class Case {
 							Telesa[i].nr[j] = Telesa[i].r[j] + timeStep * Telesa[i].dr[j];
 							if (t%saveInterval==0)
 							{
-								SolverWrite(); // zapíše do souboru
-							} 
-						}
-					}
+										{
+			
+											for (int i = 0; i < Telesa.size(); i++)
+											{
+												for (int j = 0; j < dim; j++)
+												{
+													file << Telesa[i].nr[j];
+													if (j==dim-1)
+														{
+															file << "\n";
+														}
+														else
+														{
+															file << ";";
+														}
+													}
+												// pro pripad, ze bychom chteli vypisovat i p
+											// 	for (int j = 0; j < dim; j++)
+											// 	{
+											// 		MyFile << Telesa[i].np[j];
+											// 		if (j==dim-1)
+											// 			{
+											// 				file << "\n\n";
+											// 			}
+											// 			else
+											// 			{
+											// 				file << ";";
+											// 			}
+											// 		}
+											// file << Telesa[i].dp;
+											}
+											file << "\n\n";
+										} // zapíše do souboru
+															} 
+														}
+													}
 			}
 		for (int i = 0; i < Telesa.size(); i++)//for (Teleso t : Telesa) //-> nahrat nove do stare vrstvy, asi chybi.
 		{
