@@ -5,12 +5,13 @@
 #include <fstream>
 #include "Teleso.h"
 class Case;
-    int dim;
+    const int dim = 2;
     std::vector<Teleso> Telesa;
 
-    static void Add(double x, double y, double px, double py, double ms)//Teleso t
+    // static void Add(double x, double y, double px, double py, double ms)//Teleso t
+	static void Add(Teleso t)
         {
-            Teleso t(x, y, px, py, ms);
+            // Teleso t(x, y, px, py, ms);
             Telesa.push_back(t);
         }
 
@@ -45,8 +46,8 @@ class Case;
 							MyFile << ";";
 						}
 					}
+			MyFile << Telesa[i].dp;
 			}
-			MyFile << dp;
 			MyFile << "\n\n";
 		}
 	static void SolveEuSymp(double timeStep, double end, int saveInterval)
@@ -55,14 +56,16 @@ class Case;
 		std::cout <<"Create time"<< std::endl;
 		for (int t = 0; t < nSteps; t++)  //mirne nechapu prevod z shift space do souradnic
 			{
-				Dp();
-				Dr();  // update hodnot v každý čas
+				// Telesa[i].Dp();
+				// Telesa[i].Dr();  // update hodnot v každý čas
 				for (int i = 0; i < Telesa.size(); i++) // pro každé těleso
 					{
+						Telesa[i].Dp();
+						Telesa[i].Dr();  // update hodnot v každý čas
 						for (int j = 0; j < dim; j++) // pro každou souřadnici
 						{
-							Telesa[i].np[j] = Telesa[i].p[j] + timeStep * dp[j]; // spočte nové p a nové r
-							Telesa[i].nr[j] = Telesa[i].r[j] + timeStep * dr[j];
+							Telesa[i].np[j] = Telesa[i].p[j] + timeStep * Telesa[i].dp[j]; // spočte nové p a nové r
+							Telesa[i].nr[j] = Telesa[i].r[j] + timeStep * Telesa[i].dr[j];
 							if (t%saveInterval==0)
 							{
 								SolverWrite(); // zapíše do souboru
@@ -80,18 +83,4 @@ class Case;
 		}
 
 	//pokud budete chtit dodelat solvery, tak mohme tady -> mluvil o normalnim eulerovy
-};
-	void PolTransReversible(double r[dim], bool reverse)
-	{
-		if (reverse==true)
-		{
-			x[0] = r[0]*cos(r[1]);
-			x[1] = r[0]*sin(r[1]);
-		}
-		else
-		{
-			r[0] = sqrt(pow(x[0],2)+pow(x[1],2));
-			r[1] = atan2(x[1],x[0]);
-		}
-	}
 };

@@ -28,7 +28,7 @@ public:
 	{
 		x[0] = x_;
 		x[1] = y_;
-		this->PolTransReversible(x,false);
+		this->PolTransReversible(false);
 		p[0] = px;
 		p[1] = py;
 		m = ms;
@@ -171,7 +171,8 @@ public:
 
 	//pokud budete chtit dodelat solvery, tak mohme tady -> mluvil o normalnim eulerovy
 };
-	void PolTransReversible(double r[dim], bool reverse)
+	void PolTransReversible(bool reverse)
+	// actually just updates the corresponding set of coordinates based on the other
 	{
 		if (reverse==true)
 		{
