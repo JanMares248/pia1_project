@@ -21,15 +21,16 @@ public:
 	double nm;//mass m;
 
 	//pripravene vysledne veliciny
-	 std::vector<Teleso> Telesa; //pri nejhorsim vedle public strukturu, 
+	//  int sysSize; //pri nejhorsim vedle public strukturu, 
 	 double dr[dim];
 	 double dp[dim];
 
 	Teleso(double x_, double y_, double px, double py, double ms)
 	{
+		// sysSize=sysSize_;
 		x[0] = x_;
 		x[1] = y_;
-		this->PolTransReversible(false);
+		PolTransReversible(false);
 		p[0] = px;
 		p[1] = py;
 		m = ms;
@@ -37,11 +38,11 @@ public:
 	}
 
 	// metody
-	 double Distance(int i, int j)
-	{
-		double v = sqrt(pow(2.0, Telesa[i].r[0]) + pow(2.0, Telesa[j].r[0]) + pow(2.0, Telesa[i].r[1]) + pow(2.0, Telesa[j].r[1]));
-		return v;
-	}
+	// double Distance(int i, int j)
+	// {
+	// 	double v = sqrt(pow(2.0, Telesa[i].r[0]) + pow(2.0, Telesa[j].r[0]) + pow(2.0, Telesa[i].r[1]) + pow(2.0, Telesa[j].r[1]));
+	// 	return v;
+	// }
 
 	void PolTransReversible(bool reverse)
 	// actually just updates the corresponding set of coordinates based on the other
@@ -58,63 +59,63 @@ public:
 		}
 	}
 
-	double Hamiltonian()//vypocet hamiltonianu
-	{
-		double hamiltonian;
-		double grav = 0;
-		for (int i = 0; i < Telesa.size(); i++)
-		{
-			for (int j = 0; j < Telesa.size();j++)
-			{
-				if (i < j)
-				{
-					grav = 6.6743e-11 * Telesa[i].m * Telesa[j].m / Distance(i, j);
-				}
-				else
-				{
-					grav = 0;
-				}
-				hamiltonian += (pow(2.0, Telesa[i].p[0]) + pow(2.0, Telesa[i].p[1])) / (2 * Telesa[i].m) + grav;
-			}
-		}
-		return hamiltonian;
-	};
-	 void Dr()
-	{
-		dr;
-		for (int d = 0; d < dim;d++)
-		{
-			dr[d] = 0.0;
-		}
-		for (int d = 0; d < dim;d++)
-		{
-			for (int i = 0;i < Telesa.size();i++)
-			{
-				dr[d] = Telesa[i].p[d] / Telesa[i].m;
-			}
-		}
-	}
-	 void Dp()
-	{
-		dp;
-		for (int d = 0; d < dim;d++)
-		{
-			dp[d] = 0.0;
-		}
-		for (int d = 0; d < dim;d++)
-		{
-			for (int i = 0;i < Telesa.size();i++)
-			{
-				for (int j = 0;j < Telesa.size();j++)
-				{
-					if (i != j)
-					{
-						dp[d] = (-6.6743e-11 * Telesa[i].m * Telesa[j].m / pow(Distance(i, j), 3)) * (Telesa[i].r - Telesa[j].r);
-					}
-				}
-			}
-		}
-	}
+	// double Hamiltonian()//vypocet hamiltonianu
+	// {
+	// 	double hamiltonian;
+	// 	double grav = 0;
+	// 	for (int i = 0; i < sysSize; i++)
+	// 	{
+	// 		for (int j = 0; j < sysSize;j++)
+	// 		{
+	// 			if (i < j)
+	// 			{
+	// 				grav = 6.6743e-11 * Telesa[i].m * Telesa[j].m / Distance(i, j);
+	// 			}
+	// 			else
+	// 			{
+	// 				grav = 0;
+	// 			}
+	// 			hamiltonian += (pow(2.0, Telesa[i].p[0]) + pow(2.0, Telesa[i].p[1])) / (2 * Telesa[i].m) + grav;
+	// 		}
+	// 	}
+	// 	return hamiltonian;
+	// };
+	// void Dr()
+	// {
+	// 	// dr;
+	// 	// for (int d = 0; d < dim;d++)
+	// 	// {
+	// 	// 	dr[d] = 0.0;
+	// 	// }
+	// 	for (int d = 0; d < dim;d++)
+	// 	{
+	// 		for (int i = 0;i < sysSize;i++)
+	// 		{
+	// 			dr[d] = Telesa[i].p[d] / Telesa[i].m;
+	// 		}
+	// 	}
+	// }
+	// void Dp()
+	// {
+	// 	dp;
+	// 	for (int d = 0; d < dim;d++)
+	// 	{
+	// 		dp[d] = 0.0;
+	// 	}
+	// 	for (int d = 0; d < dim;d++)
+	// 	{
+	// 		for (int i = 0;i < sysSize;i++)
+	// 		{
+	// 			for (int j = 0;j < sysSize;j++)
+	// 			{
+	// 				if (i != j)
+	// 				{
+	// 					dp[d] = (-6.6743e-11 * Telesa[i].m * Telesa[j].m / pow(Distance(i, j), 3)) * (Telesa[i].x - Telesa[j].x);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 
 	//  void Add(double x, double y, double px, double py, double ms)//Teleso t
