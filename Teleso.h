@@ -49,13 +49,17 @@ public:
 	{
 		if (reverse==true)
 		{
-			x[0] = r[0]*cos(r[1]);
-			x[1] = r[0]*sin(r[1]);
+			// x[0] = r[0]*cos(r[1]);
+			// x[1] = r[0]*sin(r[1]);
+			x[0] = r[0];
+			x[1] = r[1];
 		}
 		else
 		{
-			r[0] = sqrt(pow(x[0],2)+pow(x[1],2));
-			r[1] = atan2(x[1],x[0]);
+			// r[0] = sqrt(pow(x[0],2)+pow(x[1],2));
+			// r[1] = atan2(x[1],x[0]);
+			r[0] = x[0];
+			r[1] = x[1];
 		}
 	}
 

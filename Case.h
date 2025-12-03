@@ -135,11 +135,12 @@ class Case {
 	double Dv(int telI,int coor){
 		double dvi=0;
 		double G=-6.6743e-11;
+		// double G=-6.6743e2;
 		for (int j = 0; j < Telesa.size(); j++)
 		{
 			if (j!=telI)
 			{
-				dvi+=(G*Telesa[telI].m*Telesa[j].m*(Telesa[j].r[0]-Telesa[telI].r[0]))/(Distance(telI,j)*Telesa[telI].m);
+				dvi+=(G*Telesa[telI].m*Telesa[j].m*(Telesa[j].r[coor]-Telesa[telI].r[coor]))/(pow(Telesa[j].r[coor]-Telesa[telI].r[coor],3)*Telesa[telI].m);
 			}
 		}
 		return dvi;
@@ -242,6 +243,13 @@ class Case {
 		int Nsteps=end/timeStep;
 		for (int t = 0; t < Nsteps; t++)	//casova iterace
 		{
+			// std::cout <<"puvodni"<< std::endl;
+			// std::cout <<Telesa[1].p[0]<< std::endl;
+			// std::cout <<Telesa[1].p[1]<< std::endl;
+			// std::cout <<"\n dv"<< std::endl;
+			// std::cout <<Dv(1,0)<< std::endl;
+			// std::cout <<Dv(1,1)<< std::endl;
+			// std::cout <<"\n novy"<< std::endl;
 			for (int telI = 0; telI < Telesa.size(); telI++)	//telesova iterace
 			{
 				for (int coor = 0; coor < dim; coor++)	//souradincova iterace rychlost
@@ -253,20 +261,30 @@ class Case {
 				for (int coor = 0; coor < dim; coor++)	//souradincova iterace poloha
 				{
 					Telesa[telI].PolTransReversible(true);
-					file << Telesa[telI].x[coor];
-					if (coor<dim-1)
+					if (t%saveInterval==0)
 					{
-						file << ",";
+						file << Telesa[telI].x[coor];
+						if (coor<dim-1)
+						{
+							file << ",";
+						}
 					}
 					Telesa[telI].nr[coor]=Telesa[telI].r[coor]+Telesa[telI].np[coor]*timeStep;
 					Telesa[telI].r[coor]=Telesa[telI].nr[coor];
 				}
 				if (telI!=Telesa.size()-1)
 				{
-					file << ";";
+					if (t%saveInterval==0){
+						file << ";";
+					}
 				}
 			}
-			file << "\n";
+			// std::cout <<Telesa[1].p[0]<< std::endl;
+			// std::cout <<Telesa[1].p[1]<< std::endl;
+			// std::cout <<"\n\n"<< std::endl;
+			if (t%saveInterval==0){
+				file << "\n";
+			}
 		}
 	}
 };
