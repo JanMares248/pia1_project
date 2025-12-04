@@ -16,7 +16,7 @@ public:
 	double nm;
 
 
-	static std::vector<Teleso> Telesa;
+	static std::vector<Teleso> Bodies;
 	static double dr[2];
 	static double dp[2];
 

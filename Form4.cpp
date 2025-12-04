@@ -179,7 +179,7 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
 
 //void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
 //{
-//    Teleso::Telesa.clear();
+//    Teleso::Bodies.clear();
 //
 //    int count = Form2::savedPoints->Count;
 //    if (count == 0) return;
@@ -209,7 +209,7 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
 //        double px = mass * vx;
 //        double py = mass * vy;
 //
-//        Teleso::Telesa.emplace_back(x, y, px, py, mass);
+//        Teleso::Bodies.emplace_back(x, y, px, py, mass);
 //    }
 //}
 

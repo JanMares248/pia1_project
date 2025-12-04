@@ -8,68 +8,82 @@
 class Case {
 
 //////////////////VARIABLES/////////////////////////////////////////////////////////
+
+	double G=-6.6743e-11; // Gravitational constant 
+
 	public:
-    const int dim = 2;
-    std::vector<Teleso> Telesa;
+
+		const int dim = 2; // the number of dimensions of the system
+		std::vector<Teleso> Bodies; // the list of bodies
+	
 
 //////////////////METHODS///////////////////////////////////////////////////////////
+
+//adds a body into the Telesa List  
 	void Add(Teleso t)
         {
-            Telesa.push_back(t);
+            Bodies.push_back(t);
         }
 
-	double Distance(int i, int j)
+//calculates distance of two bodies in l2 norm
+	double Distance(int i, int j) 
 	{
 		double s = 0;
-		for (int k = 0; k < dim; k++)
+
+		for (int k = 0; k < dim; k++) // sums over all dimensions
 		{
-			s+=pow(abs(Telesa[j].x[k]-Telesa[i].x[k]),2);
+			s+=pow(abs(Bodies[j].x[k]-Bodies[i].x[k]),2);
 		}
 		double v = sqrt(s);
 		return v;
 	}
-	double Dv(int telI,int coor){
+
+//calculates the change of velocity to the next iteration
+	double Dv(int telI,int coor)
+	{
 		double dvi=0;
-		double G=-6.6743e-11;
-		// double G=-6.6743e2;
-		for (int j = 0; j < Telesa.size(); j++)
+		for (int j = 0; j < Bodies.size(); j++) // sum over all other bodies
 		{
 			if (j!=telI)
 			{
-				dvi-=(G*Telesa[j].m*(Telesa[j].x[coor]-Telesa[telI].x[coor]))/(pow(Distance(telI,j),3));
+				dvi-=(G*Bodies[j].m*(Bodies[j].x[coor]-Bodies[telI].x[coor]))/(pow(Distance(telI,j),3)); // calculate the force on this body
 			}
 		}
 		return dvi;
 		
 	}
+
+//Semi-implicit Euler method solver 
 	void SolveEuSymp(double timeStep, double end, int saveInterval)
 	{	
-		std::ofstream file("solverResult.txt");
-		int Nsteps=end/timeStep;
-		for (int t = 0; t < Nsteps; t++)	//casova iterace
+		std::ofstream file("solverResult.txt"); // output file
+
+		int Nsteps=end/timeStep; // number of steps
+
+		for (int t = 0; t < Nsteps; t++)	// time iteration
 		{
-			for (int telI = 0; telI < Telesa.size(); telI++)	//telesova iterace
+			for (int telI = 0; telI < Bodies.size(); telI++)	// body iteration
 			{
-				for (int coor = 0; coor < dim; coor++)	//souradincova iterace rychlost
+				for (int coor = 0; coor < dim; coor++)	//dimension iteration for velocity
 				{
-					Telesa[telI].nv[coor]=Telesa[telI].v[coor]+Dv(telI,coor)*timeStep;
-					Telesa[telI].v[coor]=Telesa[telI].nv[coor]; //rovnou prepise
+					Bodies[telI].nv[coor]=Bodies[telI].v[coor]+Dv(telI,coor)*timeStep; // calculates new velocity
+					Bodies[telI].v[coor]=Bodies[telI].nv[coor]; // updates velocity
 				}																		
 				
-				for (int coor = 0; coor < dim; coor++)	//souradincova iterace poloha
+				for (int coor = 0; coor < dim; coor++)	//dimension iteration for position
 				{
-					if (t%saveInterval==0)
+					if (t%saveInterval==0) // print to file
 					{
-						file << Telesa[telI].x[coor];
+						file << Bodies[telI].x[coor];
 						if (coor<dim-1)
 						{
 							file << ",";
 						}
 					}
-					Telesa[telI].nr[coor]=Telesa[telI].x[coor]+Telesa[telI].nv[coor]*timeStep;
-					Telesa[telI].x[coor]=Telesa[telI].nr[coor];
+					Bodies[telI].nr[coor]=Bodies[telI].x[coor]+Bodies[telI].nv[coor]*timeStep;// calculates new position
+					Bodies[telI].x[coor]=Bodies[telI].nr[coor]; //updates position
 				}
-				if (telI!=Telesa.size()-1)
+				if (telI!=Bodies.size()-1) // print to file
 				{
 					if (t%saveInterval==0){
 						file << ";";
@@ -80,5 +94,6 @@ class Case {
 				file << "\n";
 			}
 		}
+		file.close();
 	}
 };
