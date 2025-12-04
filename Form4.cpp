@@ -179,7 +179,18 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
 
 //void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
 //{
-//    Teleso::Bodies.clear();
+//    Teleso::Telesa.clear();
+// 
+// savedPoints ... polohy
+// savedPoints ... seznam objektu Point ... .X ; .Y parametry
+// 
+// savedArrowStates ... poc rychlost
+// parametry .length; .angle
+// 
+// savedSizes ... hmotnosti
+// 
+// 
+//      
 //
 //    int count = Form2::savedPoints->Count;
 //    if (count == 0) return;
@@ -209,8 +220,10 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
 //        double px = mass * vx;
 //        double py = mass * vy;
 //
-//        Teleso::Bodies.emplace_back(x, y, px, py, mass);
+//        Teleso::Telesa.emplace_back(x, y, px, py, mass);
 //    }
+// 
+//  zahajit solver
 //}
 
 void Form4::btnNext_Click(Object^ sender, EventArgs^ e)
