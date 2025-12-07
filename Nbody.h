@@ -5,7 +5,7 @@
 
 const double G = 6.6743e-11;
 
-class Teleso
+class Body
 {
 public:
 	double x[2];
@@ -16,11 +16,11 @@ public:
 	double nm;
 
 
-	static std::vector<Teleso> Bodies;
+	static std::vector<Body> Bodies;
 	static double dr[2];
 	static double dp[2];
 
-	Teleso(double x, double y, double px, double py, double ms)
+	Body(double x, double y, double px, double py, double ms)
 	{
 		x[0] = x;
 		x[1] = y;

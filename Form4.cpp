@@ -2,7 +2,8 @@
 #include "Form3.h"
 #include "Form4.h"
 #include "Form5.h"
-#include "NBody.h"
+#include "Body.h"
+#include "Case.h"
 #include <math.h>
 
 int Form4::getRadius(int sizeSetting)
@@ -177,54 +178,52 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
     }
 }
 
-//void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
-//{
-//    Teleso::Telesa.clear();
-// 
-// savedPoints ... polohy
-// savedPoints ... seznam objektu Point ... .X ; .Y parametry
-// 
-// savedArrowStates ... poc rychlost
-// parametry .length; .angle
-// 
-// savedSizes ... hmotnosti
-// 
-// 
-//      
-//
-//    int count = Form2::savedPoints->Count;
-//    if (count == 0) return;
-//
-//    for (int i = 0; i < count; i++)
-//    {
-//        double x = (double)Form2::savedPoints[i].X;
-//        double y = (double)Form2::savedPoints[i].Y;
-//
-//
-//        Form3::ArrowState state = Form3::savedArrowStates[i];
-//
-//        // delka sipky -> pocatecni vektor rychlost
-//        double speedMagnitude = (double)state.length / 10.0; // deleno 10
-//
-//        // uhel v radianech
-//        double angle = state.angle;
-//
-//        //V_x = |V| * cos(angle), V_y = |V| * sin(angle)
-//        double vx = speedMagnitude * System::Math::Cos(angle);
-//        double vy = speedMagnitude * System::Math::Sin(angle);
-//
-//        // hmostnost m z savedSizes
-//        double mass = (double)Form4::savedSizes[i];
-//
-//        //p = m * v
-//        double px = mass * vx;
-//        double py = mass * vy;
-//
-//        Teleso::Telesa.emplace_back(x, y, px, py, mass);
-//    }
-// 
-//  zahajit solver
-//}
+void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
+{
+
+    // savedPoints ... polohy
+    // savedPoints ... seznam objektu Point ... .X ; .Y parametry
+
+    // savedArrowStates ... poc rychlost
+    // parametry .length; .angle
+
+    // savedSizes ... hmotnosti
+
+     
+   Case mainCase();
+   int count = Form2::savedPoints->Count;
+   if (count == 0) return;
+
+   for (int i = 0; i < count; i++)
+   {
+       double x = (double)Form2::savedPoints[i].X;
+       double y = (double)Form2::savedPoints[i].Y;
+
+
+       Form3::ArrowState state = Form3::savedArrowStates[i];
+
+       // delka sipky -> pocatecni vektor rychlost
+       double speedMagnitude = (double)state.length / 10.0; // deleno 10
+
+       // uhel v radianech
+       double angle = state.angle;
+
+       //V_x = |V| * cos(angle), V_y = |V| * sin(angle)
+       double vx = speedMagnitude * System::Math::Cos(angle);
+       double vy = speedMagnitude * System::Math::Sin(angle);
+
+       // hmostnost m z savedSizes
+       double mass = (double)Form4::savedSizes[i];
+
+       //p = m * v
+    //    double px = mass * vx;
+    //    double py = mass * vy;
+
+       mainCase.Add(Body b(x, y, vx, vy, mass));
+   }
+
+   mainCase.SolveEuSymp(1,50000,500);
+}
 
 void Form4::btnNext_Click(Object^ sender, EventArgs^ e)
 {

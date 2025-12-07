@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
-#include "Teleso.h"
+#include "Body.h"
 
 class Case {
 
@@ -14,13 +14,13 @@ class Case {
 	public:
 
 		const int dim = 2; // the number of dimensions of the system
-		std::vector<Teleso> Bodies; // the list of bodies
+		std::vector<Body> Bodies; // the list of bodies
 	
 
 //////////////////METHODS///////////////////////////////////////////////////////////
 
 //adds a body into the Telesa List  
-	void Add(Teleso t)
+	void Add(Body t)
         {
             Bodies.push_back(t);
         }
@@ -56,7 +56,7 @@ class Case {
 //Semi-implicit Euler method solver 
 	void SolveEuSymp(double timeStep, double end, int saveInterval)
 	{	
-		std::ofstream file("solverResult.txt"); // output file
+		std::ofstream file("polohy.txt"); // output file
 
 		int Nsteps=end/timeStep; // number of steps
 
