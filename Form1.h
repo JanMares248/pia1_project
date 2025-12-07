@@ -12,7 +12,7 @@ public:
     Form1()
     {
         this->Text = "Select Count";
-        this->ClientSize = Drawing::Size(800, 400);
+        this->ClientSize = Drawing::Size(1200, 700);
         this->BackColor = System::Drawing::Color::Black;
 
         comboBox1 = gcnew ComboBox();
