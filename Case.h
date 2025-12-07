@@ -1,9 +1,11 @@
+#pragma managed(push, off)
 #include <array>
 #include <vector>
 #include <cmath>
 #include <iostream>
 #include <fstream>
 #include "Body.h"
+#include <string>
 
 class Case {
 
@@ -54,11 +56,11 @@ class Case {
 	}
 
 //Semi-implicit Euler method solver 
-	void SolveEuSymp(double timeStep, double end, int saveInterval)
+	void SolveEuSymp(double timeStep, double end, int saveInterval, std::string filePath)
 	{	
-		std::ofstream file("polohy.txt"); // output file
+		std::ofstream file(filePath); // output file
 
-		int Nsteps=end/timeStep; // number of steps
+		int Nsteps = (int)(end / timeStep); // number of steps
 
 		for (int t = 0; t < Nsteps; t++)	// time iteration
 		{
@@ -74,7 +76,7 @@ class Case {
 				{
 					if (t%saveInterval==0) // print to file
 					{
-						file << Bodies[telI].x[coor];
+						file << (int)Bodies[telI].x[coor];
 						if (coor<dim-1)
 						{
 							file << ",";
@@ -97,3 +99,5 @@ class Case {
 		file.close();
 	}
 };
+
+#pragma managed(pop)

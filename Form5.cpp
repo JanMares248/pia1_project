@@ -63,93 +63,125 @@ void Form5::SetupColors()
 
 void Form5::LoadAnimationData(String^ filename)
 {
-    // Pocet teles je urcen poctem savedPoints
-    int numBalls = Form2::savedPoints->Count;
+    String^ fullFilePath = GetPolohyFilePath();
+    animationFrames->Clear();
 
-    if (numBalls == 0)
+    if (!File::Exists(fullFilePath))
     {
-        MessageBox::Show("Form2::savedPoints is empty. You must set initial ball count and positions in Form1/Form2 before opening Form5.",
-            "Debug: Missing Prerequisites", MessageBoxButtons::OK, MessageBoxIcon::Error);
+        MessageBox::Show("The file 'polohy.txt' was not found in the application directory. Starting with an empty animation.", "Warning");
+        Frame emptyFrame;
+        emptyFrame.positions = gcnew List<Point>();
+        animationFrames->Add(emptyFrame);
+        currentFrameIndex = 0;
         return;
     }
 
-    String^ exePath = System::Windows::Forms::Application::ExecutablePath;
-    String^ exeDirectory = System::IO::Path::GetDirectoryName(exePath);
-    String^ fullFilePath = System::IO::Path::Combine(exeDirectory, filename);
-
-
-
     try
     {
-        StreamReader^ sr = gcnew StreamReader(fullFilePath);
+        StreamReader^ din = File::OpenText(fullFilePath);
         String^ line;
-        int lineNumber = 0;
 
-        while ((line = sr->ReadLine()) != nullptr)
+
+        while ((line = din->ReadLine()) != nullptr)
         {
-            lineNumber++;
+            String^ trimmedLine = line->Trim();
+            if (trimmedLine->Length == 0) continue;
 
-            if (line->StartsWith("#") || line->Trim() == "") continue;
+            Frame newFrame;
+            newFrame.positions = gcnew List<Point>();
 
-            // format: X1,Y1;X2,Y2;...;Xn,Yn
-            array<String^>^ ballPositions = line->Split(';');
+            // 1. Rozdìlení øádku na tìlesa pomocí ';'
+            //    POUŽITÍ RemoveEmptyEntries ZAJISTÍ, ŽE SE PØESKOÈÍ PRÁZDNÉ ØETÌZCE
+            array<String^>^ bodies = trimmedLine->Split(gcnew array<Char>{';'}, StringSplitOptions::RemoveEmptyEntries);
 
-            if (ballPositions->Length != numBalls)
+            for (int i = 0; i < bodies->Length; i++)
             {
-                System::Diagnostics::Debug::WriteLine(String::Format("Skipping line {0}: Expected {1} ball position pairs, but found {2}.",
-                    lineNumber, numBalls, ballPositions->Length));
-                continue;
-            }
+                String^ bodyString = bodies[i]->Trim();
+                if (bodyString->Length == 0) continue;
 
-            Frame currentFrame;
-            currentFrame.positions = gcnew List<Point>();
-            bool validFrame = true;
-
-            for (int i = 0; i < numBalls; i++)
-            {
-                array<String^>^ coords = ballPositions[i]->Split(',');
+                // 2. Rozdìlení tìlesa na souøadnice X,Y pomocí ','
+                array<String^>^ coords = bodyString->Split(gcnew array<Char>{','}, StringSplitOptions::RemoveEmptyEntries);
 
                 if (coords->Length == 2)
                 {
-                    int x, y;
-                    if (Int32::TryParse(coords[0]->Trim(), x) && Int32::TryParse(coords[1]->Trim(), y))
+                    String^ xStr = coords[0]->Trim();
+                    String^ yStr = coords[1]->Trim();
+
+                    if (xStr->Length > 0 && yStr->Length > 0)
                     {
-                        currentFrame.positions->Add(Point(x, y));
+                        System::Int64 x_long, y_long;
+
+                        try
+                        {
+                            // 3. Použití Int64::Parse s NumberStyles::Integer pro striktní formát
+                            x_long = System::Int64::Parse(xStr, System::Globalization::NumberStyles::Integer);
+                            y_long = System::Int64::Parse(yStr, System::Globalization::NumberStyles::Integer);
+                        }
+                        catch (System::FormatException^)
+                        {
+                            // Zde je hlášena chyba s konkrétním øetìzcem
+                            throw gcnew System::FormatException("Selhalo parsování souøadnic: X='" + xStr + "', Y='" + yStr + "'. Zkontrolujte 'polohy.txt' na skryté znaky (napø. \r).");
+                        }
+
+                        // Kontrola, zda se souøadnice vejdou do 32-bit int (pro Point)
+                        if (x_long >= System::Int32::MinValue && x_long <= System::Int32::MaxValue &&
+                            y_long >= System::Int32::MinValue && y_long <= System::Int32::MaxValue)
+                        {
+                            int x = (int)x_long;
+                            int y = (int)y_long;
+
+                            newFrame.positions->Add(System::Drawing::Point(x, y));
+                        }
+                        // Jinak jsou souøadnice pøíliš velké a jsou pøeskoèeny.
                     }
-                    else
-                    {
-                        validFrame = false;
-                        System::Diagnostics::Debug::WriteLine(String::Format("Line {0}, Ball {1}: Coordinate could not be parsed.", lineNumber, i + 1));
-                        break;
-                    }
-                }
-                else
-                {
-                    validFrame = false;
-                    System::Diagnostics::Debug::WriteLine(String::Format("Line {0}, Ball {1}: Invalid coordinate format.", lineNumber, i + 1));
-                    break;
                 }
             }
 
-            if (validFrame)
+            if (newFrame.positions->Count > 0)
             {
-                animationFrames->Add(currentFrame);
+                animationFrames->Add(newFrame);
             }
         }
 
-        sr->Close();
+        din->Close();
+        currentFrameIndex = 0;
     }
-    catch (FileNotFoundException^)
+    catch (System::Exception^ ex)
     {
-        // pokud se soubor vubec nenacte
-        MessageBox::Show("Error: 'polohy.txt' file not found. Ensure it is in the same directory as the executable:\n" + fullFilePath,
-            "File Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+        // Zde se zobrazí zpráva s konkrétním chybným øetìzcem
+        MessageBox::Show("Došlo k chybì pøi parsování 'polohy.txt': " + ex->Message, "Závažná chyba: Problém s formátem dat");
+    }
+}
+
+void Form5::SaveAnimationData()
+{
+    String^ fullFilePath = GetPolohyFilePath();
+
+    try
+    {
+        StreamWriter^ sw = gcnew StreamWriter(fullFilePath, false);
+
+        for each (Frame frame in animationFrames)
+        {
+            String^ line = "";
+            for each (Point p in frame.positions)
+            {
+                line += p.X.ToString() + ";" + p.Y.ToString() + ";";
+            }
+            if (line->EndsWith(";"))
+            {
+                line = line->Substring(0, line->Length - 1);
+            }
+
+            sw->WriteLine(line);
+        }
+
+        sw->Close();
+        MessageBox::Show("Data saved successfully to: " + fullFilePath, "Success");
     }
     catch (Exception^ ex)
     {
-        // pokud je spatny format
-        MessageBox::Show("Unexpected Error loading animation data: " + ex->Message,
-            "File Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+        MessageBox::Show("An error occurred while saving 'polohy.txt': " + ex->Message, "Error");
     }
 }
 
@@ -213,6 +245,18 @@ void Form5::AnimationTimer_Tick(Object^ sender, EventArgs^ e)
 
 
     this->Invalidate();
+}
+
+
+String^ Form5::GetPolohyFilePath()
+{
+    String^ fullExePath = System::Windows::Forms::Application::ExecutablePath;
+
+    String^ exeDirectory = System::IO::Path::GetDirectoryName(fullExePath);
+
+    String^ filePath = System::IO::Path::Combine(exeDirectory, "polohy.txt");
+
+    return filePath;
 }
 
 void Form5::btnPrev_Click(Object^ sender, EventArgs^ e)

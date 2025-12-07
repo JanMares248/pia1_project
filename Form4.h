@@ -13,6 +13,8 @@ public:
 
     static List<int>^ savedSizes = gcnew List<int>();
 
+    void InitializeSimulationData(System::Drawing::Size windowSize);
+
 private:
     int baseRadius;
     int selectedIndex;

@@ -1,3 +1,4 @@
+#pragma managed(push, off)
 //using coordinates = double[];  //mnenitelne typy
 //using speeds = double[];
 //using mass = double;
@@ -26,3 +27,5 @@ public:
 		m = ms;
 	}
 };
+
+#pragma managed(pop)

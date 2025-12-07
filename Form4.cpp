@@ -1,10 +1,14 @@
+#include "Body.h"
+#include "Case.h" 
+#include <math.h>
+
+#include <msclr/marshal_cppstd.h> 
+#include <string> 
+
 #include "Form2.h"
 #include "Form3.h"
 #include "Form4.h"
 #include "Form5.h"
-#include "Body.h"
-#include "Case.h"
-#include <math.h>
 
 int Form4::getRadius(int sizeSetting)
 {
@@ -178,7 +182,7 @@ void Form4::SizeEditor_TextChanged(Object^ sender, EventArgs^ e)
     }
 }
 
-void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
+void Form4::InitializeSimulationData(System::Drawing::Size windowSize)
 {
 
     // savedPoints ... polohy
@@ -189,8 +193,15 @@ void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
 
     // savedSizes ... hmotnosti
 
+    String^ fullExePath = System::Windows::Forms::Application::ExecutablePath;
+    String^ exeDirectory = System::IO::Path::GetDirectoryName(fullExePath);
+    String^ cliFilePath = System::IO::Path::Combine(exeDirectory, "polohy.txt");
+
+    msclr::interop::marshal_context context;
+    std::string nativeFilePath = context.marshal_as<std::string>(cliFilePath);
+
      
-   Case mainCase();
+   Case mainCase;
    int count = Form2::savedPoints->Count;
    if (count == 0) return;
 
@@ -200,7 +211,7 @@ void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
        double y = (double)Form2::savedPoints[i].Y;
 
 
-       Form3::ArrowState state = Form3::savedArrowStates[i];
+       ArrowState state = Form3::savedArrowStates[i];
 
        // delka sipky -> pocatecni vektor rychlost
        double speedMagnitude = (double)state.length / 10.0; // deleno 10
@@ -219,15 +230,15 @@ void NBody::InitializeSimulationData(System::Drawing::Size windowSize)
     //    double px = mass * vx;
     //    double py = mass * vy;
 
-       mainCase.Add(Body b(x, y, vx, vy, mass));
+       mainCase.Add(Body(x, y, vx, vy, mass));
    }
 
-   mainCase.SolveEuSymp(1,50000,500);
+   mainCase.SolveEuSymp(1, 50000, 500, nativeFilePath);
 }
 
 void Form4::btnNext_Click(Object^ sender, EventArgs^ e)
 {
-    //NBody::InitializeSimulationData(this->ClientSize);
+    Form4::InitializeSimulationData(this->ClientSize);
 
     Form5^ f5 = gcnew Form5(this->ClientSize);
     f5->Location = this->Location;
